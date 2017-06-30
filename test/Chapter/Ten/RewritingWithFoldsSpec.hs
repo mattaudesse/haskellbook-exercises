@@ -1,6 +1,7 @@
 module Chapter.Ten.RewritingWithFoldsSpec (specs) where
 
 import Test.Hspec
+import Control.Exception (evaluate)
 import Chapter.Ten.RewritingWithFolds
 
 
@@ -101,19 +102,27 @@ squishAgainSpecs = describe "`squishAgain` is `squish` in terms of `squishMap` t
 
 
 myMaximumBySpecs :: SpecWith ()
-myMaximumBySpecs = describe "`myMaximumBy` is a combinator that" $
+myMaximumBySpecs = describe "`myMaximumBy` is a combinator that" $ do
     it "takes a comparison func and list and returns the last value by `GT`" $ do
         myMaximumBy (\_ _ -> GT) [1..10 :: Int] `shouldBe` 1
         myMaximumBy (\_ _ -> LT) [1..10 :: Int] `shouldBe` 10
         myMaximumBy compare      [1..10 :: Int] `shouldBe` 10
 
+    it "throws an exception when passed an empty list argument" $
+        evaluate (myMaximumBy (\_ _ -> GT) []) `shouldThrow`
+            errorCall "Zero-length list argument!"
+
 
 myMinimumBySpecs :: SpecWith ()
-myMinimumBySpecs = describe "`myMinimumBy` is a combinator that" $
+myMinimumBySpecs = describe "`myMinimumBy` is a combinator that" $ do
     it "takes a comparison func and list and returns the last value by `LT`" $ do
         myMinimumBy (\_ _ -> GT) [1..10 :: Int] `shouldBe` 10
         myMinimumBy (\_ _ -> LT) [1..10 :: Int] `shouldBe` 1
         myMinimumBy compare      [1..10 :: Int] `shouldBe` 1
+
+    it "throws an exception when passed an empty list argument" $
+        evaluate (myMinimumBy (\_ _ -> GT) []) `shouldThrow`
+            errorCall "Zero-length list argument!"
 
 
 specs :: SpecWith ()
